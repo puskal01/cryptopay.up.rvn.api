@@ -91,24 +91,32 @@ async function publishTx(serializedTransaction) {
   return resultData;
 }
 async function sendTransaction(address, my_address, privateKey, amount) {
-  const serializedTransaction = await createTransaction(privateKey, my_address, address, amount);
-  const fee = MINER_FEE / SAT_IN_RVN;
-  const remainingBalance = await getbalance(my_address);
-  const withdrawnAmount = amount;
-  const fromAddress = my_address;
+  try {
+    const serializedTransaction = await createTransaction(privateKey, my_address, address, amount);
+    const fee = MINER_FEE / SAT_IN_RVN;
+    const remainingBalance = await getbalance(my_address);
+    const withdrawnAmount = amount;
+    const fromAddress = my_address;
 
-  const transactionResult = await publishTx(serializedTransaction);
+    if (!serializedTransaction) {
+      throw new Error('Serialized transaction is undefined');
+    }
 
- return {
-txid: transactionResult.txid,
-withdrawnAmount: withdrawnAmount,
-toaddr: address,
-fromAddress: fromAddress,
-remainingBalance: remainingBalance,
-fee: fee,
-};
+    const transactionResult = await publishTx(serializedTransaction);
+
+    return {
+      txid: transactionResult.txid,
+      withdrawnAmount: withdrawnAmount,
+      toaddr: address,
+      fromAddress: fromAddress,
+      remainingBalance: remainingBalance,
+      fee: fee,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error sending transaction');
+  }
 }
-
 app.get('/', (req, res) => {
   // Generate a new RVN address and private key
   const keyPair = RVN.ECPair.makeRandom();
