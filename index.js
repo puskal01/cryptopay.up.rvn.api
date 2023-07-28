@@ -78,18 +78,10 @@ async function createTransaction(privateKey, origin, destination, amount) {
 
 async function publishTx(serializedTransaction) {
   try {
-    const url = `https://api.ravencoin.org/tx/send`;
+    const url = `https://api.ravencoin.org/tx/send?rawtx=${encodeURIComponent(serializedTransaction)}`;
     console.log('Publishing transaction to:', url);
 
-    const data = JSON.stringify({ rawtx: serializedTransaction });
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: data, 
-    });
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error('Request failed with status: ' + response.status);
@@ -110,7 +102,6 @@ async function publishTx(serializedTransaction) {
     throw error;
   }
 }
-
 async function sendTransaction(address, my_address, privateKey, amount) {
   try {
     const balance = await getbalance(my_address);
