@@ -17,7 +17,7 @@
     "express": "~4.16.1",
     "express-validator": "^6.14.2",
     "node-fetch-polyfill": "^2.0.6",
-    "node-fetch": "latest"
+    "node-fetch": "latest",
     "rxjs": "^7.5.5",
     "strip-hex-prefix": "^1.0.0"
   },
