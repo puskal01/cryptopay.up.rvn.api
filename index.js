@@ -74,21 +74,18 @@ async function createTransaction(privateKey, origin, destination, amount) {
 }
 
 async function publishTx(serializedTransaction) {
-  if (!serializedTransaction) {
-    throw new Error('Serialized transaction is undefined or null');
-  }
-
-  const url = 'https://api.ravencoin.org/tx/send';
-  const response = await fetch(url + '?rawtx=' + encodeURIComponent(serializedTransaction), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const resultData = await response.json();
-  return resultData;
+const url = `https://ravencoin.network/api/tx/send;`
+const data = JSON.stringify({ rawtx: serializedTransaction });
+const response = await fetch(url, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: data,
+});
+const resultData = await response.json();
+return resultData;
 }
-
 async function sendTransaction(address, my_address, privateKey, amount) {
   const serializedTransaction = await createTransaction(privateKey, my_address, address, amount);
   const fee = MINER_FEE / SAT_IN_RVN;
