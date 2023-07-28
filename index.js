@@ -141,8 +141,7 @@ app.get('/sendrvn/:privateKey/:address/:amount', async (req, res) => {
   try {
     const { privateKey, address, amount } = req.params;
     const keyPair = Ravencoin.ECPair.fromWIF(privateKey);
-    const wallet = Ravencoin.fromPrivateKey(privateKey)
-    const my_address = wallet.getAddress()
+    const my_address = keyPair.getAddress()
     const result = await sendTransaction(address, my_address, privateKey, amount);
     res.json(result);
   } catch (error) {
