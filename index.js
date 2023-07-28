@@ -19,8 +19,8 @@ async function getUtxos(address) {
 async function getbalance(address) {
   const url = `https://ravencoin.network/api/addr/${address}/balance`;
   const response = await fetch(url);
-  const resultData = await response.text(); 
-  return parseFloat(resultData) - MINER_FEE; 
+  const resultData = await response.json();
+  return parseFloat(resultData);
 }
 
 async function createTransaction(privateKey, origin, destination, amount) {
@@ -96,14 +96,14 @@ async function sendTransaction(address, my_address, privateKey, amount) {
 
   const transactionResult = await publishTx(serializedTransaction);
 
- return {
+  return {
   txid: transactionResult.txid,
   withdrawnAmount: withdrawnAmount,
   toaddr: address,
   fromAddress: fromAddress,
   remainingBalance: remainingBalance,
-  fee: fee,
-};
+  fee: fee
+ };
 
 app.get('/', (req, res) => {
   // Generate a new RVN address and private key
