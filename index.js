@@ -2,6 +2,7 @@ const express = require('express');
 const Ravencoin = require('ravencoinjs-lib');
 const fetch = require('node-fetch-polyfill');
 const app = express();
+const RVN = Ravencoin
 const SAT_IN_RVN = 100000000;
 const FEE_TO_SEND_RVN = 0.0000553 * SAT_IN_RVN;
 const MINER_FEE = 2000;
