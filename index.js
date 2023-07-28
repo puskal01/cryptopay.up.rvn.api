@@ -127,6 +127,8 @@ async function sendTransaction(address, my_address, privateKey, amount) {
       throw new Error('Failed to create transaction');
     }
 
+    console.log(serializedTransaction); // Add this line
+
     const fee = MINER_FEE / SAT_IN_RVN;
     const transactionAmount = parseFloat(amount) * SAT_IN_RVN;
     const totalAmount = transactionAmount + FEE_TO_SEND_RVN + fee;
