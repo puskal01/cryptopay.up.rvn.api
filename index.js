@@ -74,8 +74,11 @@ async function createTransaction(privateKey, origin, destination, amount) {
 }
 
 async function publishTx(serializedTransaction) {
+  if (!serializedTransaction) {
+    throw new Error('Serialized transaction is undefined or null');
+  }
+
   const url = 'https://api.ravencoin.org/tx/send';
-  const data = JSON.stringify({ rawtx: serializedTransaction });
   const response = await fetch(url + '?rawtx=' + encodeURIComponent(serializedTransaction), {
     method: 'GET',
     headers: {
