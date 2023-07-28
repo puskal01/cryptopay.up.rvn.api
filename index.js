@@ -5,7 +5,7 @@ const app = express();
 const RVN = Ravencoin
 const SAT_IN_RVN = 100000000;
 const FEE_TO_SEND_RVN = 0.0000553 * SAT_IN_RVN;
-const MINER_FEE = 20000;
+const MINER_FEE = 2000;
 
 
 
@@ -19,8 +19,8 @@ async function getUtxos(address) {
 async function getbalance(address) {
   const url = `https://ravencoin.network/api/addr/${address}/balance`;
   const response = await fetch(url);
-  const resultData = await response.text();
-  return parseFloat(resultData) - MINER_FEE;
+  const resultData = await response.text(); 
+  return parseFloat(resultData) - MINER_FEE; 
 }
 
 async function createTransaction(privateKey, origin, destination, amount) {
