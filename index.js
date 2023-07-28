@@ -17,7 +17,7 @@ return resultData;
 }
 
 async function getbalance(address) {
-  const url = `https://ravencoin.network/api/addr/${address}/balance`;
+  const url = `https://api.ravencoin.org/api/addr/${address}/balance`;
   const response = await fetch(url);
   const resultData = await response.json();
   return parseFloat(resultData);
