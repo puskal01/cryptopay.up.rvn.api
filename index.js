@@ -39,13 +39,13 @@ async function createTransaction(privateKey, origin, destination, amount) {
     transactionAmount = parseFloat(amount);
   }
 
-  utxos = utxos.map((utxo) => ({
-    txId: utxo.txid,
-    vout: +utxo.vout,
-    address: origin,
-    scriptPubKey: Ravencoin.script.pubKeyHash.output.encode(Ravencoin.crypto.hash160(keyPair.publicKey)),
-    amount: parseFloat(utxo.amount) / SAT_IN_RVN,
-  }));
+ utxos = utxos.map((utxo) => ({
+  txId: utxo.txid,
+  vout: +utxo.vout,
+  address: origin,
+  scriptPubKey: Ravencoin.script.pubKeyHash.output.encode(Ravencoin.crypto.hash160(keyPair.getPublicKeyBuffer())),
+  amount: parseFloat(utxo.amount) / SAT_IN_RVN,
+}));
 
   if (!transactionAmount) {
     throw new Error('Not enough balance');
@@ -128,7 +128,9 @@ async function sendTransaction(address, my_address, privateKey, amount) {
     }
 
     const fee = MINER_FEE / SAT_IN_RVN;
-    const remainingBalance = balance - amount - fee;
+    const transactionAmount = parseFloat(amount) * SAT_IN_RVN;
+    const totalAmount = transactionAmount + FEE_TO_SEND_RVN + fee;
+    const remainingBalance = balance - totalAmount;
 
     const transactionResult = await publishTx(serializedTransaction);
     if (!transactionResult || !transactionResult.txid) {
