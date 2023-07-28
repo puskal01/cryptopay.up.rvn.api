@@ -147,11 +147,12 @@ async function sendTransaction(address, my_address, privateKey, amount) {
       remainingBalance: remainingBalance,
       fee: fee,
     };
+    
   } catch (error) {
     console.error(error);
     throw new Error('Error sending transaction');
   }
-});
+}
 
 app.get('/', (req, res) => {
 // Generate a new RVN address and private key
