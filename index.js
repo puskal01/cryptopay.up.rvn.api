@@ -81,7 +81,7 @@ async function publishTx(serializedTransaction) {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: data,
+    body: data.toString(),
   });
   const resultData = await response.json();
   return resultData;
