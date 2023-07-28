@@ -152,7 +152,19 @@ async function sendTransaction(address, my_address, privateKey, amount) {
     throw new Error('Error sending transaction');
   }
 }
+app.get('/', (req, res) => {
+// Generate a new RVN address and private key
+const keyPair = RVN.ECPair.makeRandom();
+const address = keyPair.getAddress().toString();
+const privateKey = keyPair.toWIF();
 
+// Log the address and private key to the console
+console.log(RVN address: ${address});
+console.log(RVN Private key: ${privateKey});
+
+// Return the address and private key as a JSON object
+res.json({ address, privateKey });
+});
 app.get('/depositrvn/:privateKey/:address', async (req, res) => {
   try {
     const { privateKey, address } = req.params;
