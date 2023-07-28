@@ -96,14 +96,15 @@ async function sendTransaction(address, my_address, privateKey, amount) {
 
   const transactionResult = await publishTx(serializedTransaction);
 
-  return {
-  txid: transactionResult.txid,
-  withdrawnAmount: withdrawnAmount,
-  toaddr: address,
-  fromAddress: fromAddress,
-  remainingBalance: remainingBalance,
-  fee: fee
- };
+ return {
+txid: transactionResult.txid,
+withdrawnAmount: withdrawnAmount,
+toaddr: address,
+fromAddress: fromAddress,
+remainingBalance: remainingBalance,
+fee: fee,
+};
+}
 
 app.get('/', (req, res) => {
   // Generate a new RVN address and private key
