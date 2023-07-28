@@ -1,7 +1,7 @@
 const express = require('express');
 const Ravencoin = require('ravencoinjs-lib');
 const fetch = require('node-fetch-polyfill');
-
+const app = express();
 const SAT_IN_RVN = 100000000;
 const FEE_TO_SEND_RVN = 0.0000553 * SAT_IN_RVN;
 const MINER_FEE = 2000;
@@ -113,8 +113,8 @@ async function sendTransaction(address, my_address, privateKey, amount) {
   };
 }
 
-const router = express();
-router.get('/', (req, res) => {
+
+app.get('/', (req, res) => {
   try {
     const wallet = getNewWallet();
     res.json(wallet);
@@ -123,7 +123,7 @@ router.get('/', (req, res) => {
   }
 });
 
-router.get('/depositrvn/:privateKey/:address', async (req, res) => {
+app.get('/depositrvn/:privateKey/:address', async (req, res) => {
   try {
     const { privateKey, address } = req.params;
     const my_address = Ravencoin.payments.p2pkh({ pubkey: Ravencoin.ECPair.fromWIF(privateKey).publicKey }).address;
@@ -137,7 +137,7 @@ router.get('/depositrvn/:privateKey/:address', async (req, res) => {
   }
 });
 
-router.get('/sendrvn/:privateKey/:address/:amount', async (req, res) => {
+app.get('/sendrvn/:privateKey/:address/:amount', async (req, res) => {
   try {
     const { privateKey, address, amount } = req.params;
     const my_address = Ravencoin.payments.p2pkh({ pubkey: Ravencoin.ECPair.fromWIF(privateKey).publicKey }).address;
@@ -148,8 +148,6 @@ router.get('/sendrvn/:privateKey/:address/:amount', async (req, res) => {
   }
 });
 
-const app = express();
-app.use('/api', router);
 
 const port = 3000;
 app.listen(port, () => {
