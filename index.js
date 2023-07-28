@@ -10,7 +10,7 @@ const MINER_FEE = 2000;
 
 
 async function getUtxos(address) {
-const url = https://api.ravencoin.org/api/addr/${address}/utxo;
+const url = `https://api.ravencoin.org/api/addr/${address}/utxo`;
 const response = await fetch(url);
 const resultData = await response.json();
 return resultData;
