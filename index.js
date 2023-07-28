@@ -106,7 +106,7 @@ async function sendTransaction(address, my_address, privateKey, amount) {
 }
 
 
-app.get('/genrvn', (req, res) => {
+app.get('/', (req, res) => {
   // Generate a new RVN address and private key
   const keyPair = RVN.ECPair.makeRandom();
   const address = keyPair.getAddress().toString();
