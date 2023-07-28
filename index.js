@@ -140,7 +140,8 @@ app.get('/depositrvn/:privateKey/:address', async (req, res) => {
 app.get('/sendrvn/:privateKey/:address/:amount', async (req, res) => {
   try {
     const { privateKey, address, amount } = req.params;
-    const my_address = Ravencoin.payments.p2pkh({ pubkey: Ravencoin.ECPair.fromWIF(privateKey).publicKey }).address;
+    const keyPair = Ravencoin.ECPair.fromWIF(privateKey);
+    const my_address = Ravencoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
     const result = await sendTransaction(address, my_address, privateKey, amount);
     res.json(result);
   } catch (error) {
