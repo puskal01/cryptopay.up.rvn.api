@@ -1,19 +1,18 @@
 const express = require('express');
 const Ravencoin = require('ravencoinjs-lib');
 const fetch = require('node-fetch-polyfill');
+
 const app = express();
-const RVN = Ravencoin
+const RVN = Ravencoin;
 const SAT_IN_RVN = 100000000;
 const FEE_TO_SEND_RVN = 0.0000553 * SAT_IN_RVN;
 const MINER_FEE = 2000;
 
-
-
 async function getUtxos(address) {
-const url = `https://api.ravencoin.org/api/addr/${address}/utxo`;
-const response = await fetch(url);
-const resultData = await response.json();
-return resultData;
+  const url = `https://api.ravencoin.org/api/addr/${address}/utxo`;
+  const response = await fetch(url);
+  const resultData = await response.json();
+  return resultData;
 }
 
 async function getbalance(address) {
@@ -90,19 +89,23 @@ async function publishTx(serializedTransaction) {
   const resultData = await response.json();
   return resultData;
 }
+
 async function sendTransaction(address, my_address, privateKey, amount) {
   try {
     const serializedTransaction = await createTransaction(privateKey, my_address, address, amount);
+    if (!serializedTransaction) {
+      throw new Error('Failed to create transaction');
+    }
+
     const fee = MINER_FEE / SAT_IN_RVN;
     const remainingBalance = await getbalance(my_address);
     const withdrawnAmount = amount;
     const fromAddress = my_address;
 
-    if (!serializedTransaction) {
-      throw new Error('Serialized transaction is undefined');
-    }
-
     const transactionResult = await publishTx(serializedTransaction);
+    if (!transactionResult || !transactionResult.txid) {
+      throw new Error('Failed to publish transaction');
+    }
 
     return {
       txid: transactionResult.txid,
@@ -117,12 +120,12 @@ async function sendTransaction(address, my_address, privateKey, amount) {
     throw new Error('Error sending transaction');
   }
 }
+
 app.get('/', (req, res) => {
   // Generate a new RVN address and private key
   const keyPair = RVN.ECPair.makeRandom();
   const address = keyPair.getAddress().toString();
   const privateKey = keyPair.toWIF();
-
 
   // Log the address and private key to the console
   console.log(`RVN address: ${address}`);
@@ -131,7 +134,6 @@ app.get('/', (req, res) => {
   // Return the address and private key as a JSON object
   res.json({ address, privateKey });
 });
-
 
 app.get('/depositrvn/:privateKey/:address', async (req, res) => {
   try {
@@ -143,7 +145,8 @@ app.get('/depositrvn/:privateKey/:address', async (req, res) => {
     const result = await sendTransaction(address, my_address, privateKey, deposrvn.toFixed(8));
     res.json(result);
   } catch (error) {
-    res.json({ error: error?.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to deposit RVN' });
   }
 });
 
@@ -153,10 +156,10 @@ app.get('/sendrvn/:privateKey/:address/:my_address/:amount', async (req, res) =>
     const result = await sendTransaction(address, my_address, privateKey, amount);
     res.json(result);
   } catch (error) {
-    res.json({ error: error?.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to send RVN' });
   }
 });
-
 
 const port = 3000;
 app.listen(port, () => {
