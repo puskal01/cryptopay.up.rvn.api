@@ -140,7 +140,6 @@ app.get('/depositrvn/:privateKey/:address', async (req, res) => {
 app.get('/sendrvn/:privateKey/:address/:maddress/:amount', async (req, res) => {
   try {
     const { privateKey, address, amount, my_address } = req.params;
-    const key = new Ravencoin.PrivateKey(privateKey);
     const result = await sendTransaction(address, my_address, privateKey, amount);
     res.json(result);
   } catch (error) {
