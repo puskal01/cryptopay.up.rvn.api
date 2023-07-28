@@ -92,15 +92,22 @@ async function publishTx(serializedTransaction) {
 
 async function sendTransaction(address, my_address, privateKey, amount) {
   try {
+    const balance = await getbalance(my_address);
+    if (balance === 0) {
+      throw new Error('Insufficient balance');
+    }
+
+    if (amount === 0) {
+      throw new Error('Invalid amount');
+    }
+
     const serializedTransaction = await createTransaction(privateKey, my_address, address, amount);
     if (!serializedTransaction) {
       throw new Error('Failed to create transaction');
     }
 
     const fee = MINER_FEE / SAT_IN_RVN;
-    const remainingBalance = await getbalance(my_address);
-    const withdrawnAmount = amount;
-    const fromAddress = my_address;
+    const remainingBalance = balance - amount - fee;
 
     const transactionResult = await publishTx(serializedTransaction);
     if (!transactionResult || !transactionResult.txid) {
@@ -109,9 +116,9 @@ async function sendTransaction(address, my_address, privateKey, amount) {
 
     return {
       txid: transactionResult.txid,
-      withdrawnAmount: withdrawnAmount,
+      withdrawnAmount: amount,
       toaddr: address,
-      fromAddress: fromAddress,
+      fromAddress: my_address,
       remainingBalance: remainingBalance,
       fee: fee,
     };
@@ -120,7 +127,6 @@ async function sendTransaction(address, my_address, privateKey, amount) {
     throw new Error('Error sending transaction');
   }
 }
-
 app.get('/', (req, res) => {
   // Generate a new RVN address and private key
   const keyPair = RVN.ECPair.makeRandom();
