@@ -76,30 +76,26 @@ async function createTransaction(privateKey, origin, destination, amount) {
   return txb.build().toHex();
 }
 
+const Fetch = require('node-fetch');
+
 async function publishTx(serializedTransaction) {
   try {
-    const url = `https://api.ravencoin.org/tx/send?rawtx=${encodeURIComponent(serializedTransaction)}`;
-    console.log('Publishing transaction to:', url);
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error('Request failed with status: ' + response.status);
-    }
-
-    const resultData = await response.json();
-
-    if(!resultData || !resultData.txid) {
-      throw new Error('Result data incomplete'); 
-    }
-
-    console.log('Published tx:', resultData.txid);
-
-    return resultData;
-
-  } catch(error) {
-    console.error('Error publishing transaction:', error);
-    throw error;
+    const url = 'https://api.ravencoin.org/tx/send';
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        rawtx: serializedTransaction
+      })
+    };
+    const response = await Fetch(url, options);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to publish transaction');
   }
 }
 async function sendTransaction(address, my_address, privateKey, amount) {
