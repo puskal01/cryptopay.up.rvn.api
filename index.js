@@ -78,7 +78,7 @@ async function createTransaction(privateKey, origin, destination, amount) {
 
 async function publishTx(serializedTransaction) {
   try {
-    const url = `https://ravencoin.network/api/tx`;
+    const url = `https://api.ravencoin.org/tx/send`;
     console.log('Publishing transaction to:', url);
 
     const data = JSON.stringify({ rawtx: serializedTransaction });
