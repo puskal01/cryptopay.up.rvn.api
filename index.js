@@ -151,7 +151,8 @@ async function sendTransaction(address, my_address, privateKey, amount) {
     console.error(error);
     throw new Error('Error sending transaction');
   }
-}
+)};
+
 app.get('/', (req, res) => {
 // Generate a new RVN address and private key
 const keyPair = RVN.ECPair.makeRandom();
