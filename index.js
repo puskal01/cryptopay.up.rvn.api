@@ -28,6 +28,10 @@ async function createTransaction(privateKey, origin, destination, amount) {
   let utxos = await getUtxos(origin);
   let transactionAmount = 0;
 
+  if (!utxos || !utxos.length) {
+    throw new Error('No UTXOs found for origin address');
+  }
+
   if (!amount) {
     utxos.forEach((utxo) => {
       transactionAmount += parseFloat(utxo.amount) / SAT_IN_RVN;
@@ -74,17 +78,17 @@ async function createTransaction(privateKey, origin, destination, amount) {
 }
 
 async function publishTx(serializedTransaction) {
-const url = `https://api.ravencoin.org/api/tx/send`;`
-const data = JSON.stringify({ rawtx: serializedTransaction });
-const response = await fetch(url, {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-},
-body: data,
-});
-const resultData = await response.json();
-return resultData;
+  const url = `https://api.ravencoin.org/api/tx/send`;
+  const data = JSON.stringify({ rawtx: serializedTransaction });
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: data,
+  });
+  const resultData = await response.json();
+  return resultData;
 }
 async function sendTransaction(address, my_address, privateKey, amount) {
   const serializedTransaction = await createTransaction(privateKey, my_address, address, amount);
