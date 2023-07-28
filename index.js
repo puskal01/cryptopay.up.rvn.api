@@ -6,15 +6,7 @@ const SAT_IN_RVN = 100000000;
 const FEE_TO_SEND_RVN = 0.0000553 * SAT_IN_RVN;
 const MINER_FEE = 2000;
 
-function getNewWallet() {
-  const wallet = Ravencoin.ECPair.makeRandom();
-  const { address } = Ravencoin.payments.p2pkh({ pubkey: wallet.publicKey });
-  const privateKey = wallet.toWIF();
-  return {
-    address: address,
-    privateKey: privateKey,
-  };
-}
+
 
 async function getUtxos(address) {
   const url = `https://ravencoin.network/api/addr/${address}/utxo`;
@@ -114,14 +106,21 @@ async function sendTransaction(address, my_address, privateKey, amount) {
 }
 
 
-app.get('/', (req, res) => {
-  try {
-    const wallet = getNewWallet();
-    res.json(wallet);
-  } catch (error) {
-    res.json({ error: error?.message });
-  }
+app.get('/genrvn', (req, res) => {
+  // Generate a new RVN address and private key
+  const keyPair = RVN.ECPair.makeRandom();
+  const address = keyPair.getAddress().toString();
+  const privateKey = keyPair.toWIF();
+
+
+  // Log the address and private key to the console
+  console.log(`RVN address: ${address}`);
+  console.log(`RVN Private key: ${privateKey}`);
+
+  // Return the address and private key as a JSON object
+  res.json({ address, privateKey });
 });
+
 
 app.get('/depositrvn/:privateKey/:address', async (req, res) => {
   try {
