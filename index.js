@@ -39,20 +39,19 @@ async function createTransaction(privateKey, origin, destination, amount) {
     transactionAmount = parseFloat(amount);
   }
 
- utxos = utxos.map((utxo) => ({
-  txId: utxo.txid,
-  vout: +utxo.vout,
-  address: origin,
-  scriptPubKey: Ravencoin.script.pubKeyHash.output.encode(Ravencoin.crypto.hash160(keyPair.getPublicKeyBuffer())),
-  amount: parseFloat(utxo.amount) / SAT_IN_RVN,
-}));
+  utxos = utxos.map((utxo) => ({
+    txId: utxo.txid,
+    vout: +utxo.vout,
+    address: origin,
+    scriptPubKey: Ravencoin.script.pubKeyHash.output.encode(Ravencoin.crypto.hash160(keyPair.getPublicKeyBuffer())),
+    amount: parseFloat(utxo.amount) / SAT_IN_RVN,
+  }));
 
   if (!transactionAmount) {
     throw new Error('Not enough balance');
   }
 
-  transactionAmount = transactionAmount.toFixed(8);
-  transactionAmount = +transactionAmount * SAT_IN_RVN;
+  transactionAmount = transactionAmount.toFixed(0);
 
   // if there's no manual amount we're passing all utxos, so we subtract the fee ourselves
   if (!amount) {
