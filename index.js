@@ -51,7 +51,8 @@ async function createTransaction(privateKey, origin, destination, amount) {
     throw new Error('Not enough balance');
   }
 
-  transactionAmount = transactionAmount.toFixed(0);
+  transactionAmount = parseFloat(transactionAmount);
+  transactionAmount = Math.round(transactionAmount * SAT_IN_RVN);
 
   // if there's no manual amount we're passing all utxos, so we subtract the fee ourselves
   if (!amount) {
