@@ -4,11 +4,9 @@ const fetch = require('node-fetch-polyfill');
 
 const app = express();
 const RVN = Ravencoin;
-const SAT_IN_RVN = 100000000; 
-
-const FEE_TO_SEND_RVN = 0.00001 * SAT_IN_RVN; 
-
-const MINER_FEE = 1000;
+const SAT_IN_RVN = 100000000;
+const FEE_TO_SEND_RVN = 0.0002 * SAT_IN_RVN;
+const MINER_FEE = 20000;
 
 async function getUtxos(address) {
   const url = `https://api.ravencoin.org/api/addr/${address}/utxo`;
@@ -41,21 +39,22 @@ async function createTransaction(privateKey, origin, destination, amount) {
     transactionAmount = parseFloat(amount);
   }
 
-  utxos = utxos.map((utxo) => ({
-    txId: utxo.txid,
-    vout: +utxo.vout,
-    address: origin,
-    scriptPubKey: Ravencoin.script.pubKeyHash.output.encode(Ravencoin.crypto.hash160(keyPair.getPublicKeyBuffer())),
-    amount: parseFloat(utxo.amount) / SAT_IN_RVN,
-  }));
+ utxos = utxos.map((utxo) => ({
+  txId: utxo.txid,
+  vout: +utxo.vout,
+  address: origin,
+  scriptPubKey: Ravencoin.script.pubKeyHash.output.encode(Ravencoin.crypto.hash160(keyPair.getPublicKeyBuffer())),
+  amount: parseFloat(utxo.amount) / SAT_IN_RVN,
+}));
 
   if (!transactionAmount) {
     throw new Error('Not enough balance');
   }
 
-  transactionAmount = parseFloat(transactionAmount);
-  transactionAmount = Math.round(transactionAmount * SAT_IN_RVN);
+  transactionAmount = transactionAmount.toFixed(8);
+  transactionAmount = +transactionAmount * SAT_IN_RVN;
 
+  // if there's no manual amount we're passing all utxos, so we subtract the fee ourselves
   if (!amount) {
     transactionAmount -= FEE_TO_SEND_RVN;
   }
@@ -68,7 +67,7 @@ async function createTransaction(privateKey, origin, destination, amount) {
   });
 
   txb.addOutput(destination, transactionAmount);
-  txb.addOutput(origin, 0);
+  txb.addOutput(origin, 0); // Change output
 
   utxos.forEach((utxo, index) => {
     txb.sign(index, keyPair);
@@ -91,9 +90,10 @@ async function publishTx(serializedTransaction) {
         rawtx: serializedTransaction
       })
     };
-    const response = await fetch(url, options);
+    const response = await Fetch(url, options);
     const text = await response.text();
 
+    // Check if the response is valid JSON
     let data;
     try {
       data = JSON.parse(text);
@@ -107,7 +107,6 @@ async function publishTx(serializedTransaction) {
     throw new Error('Failed to publish transaction');
   }
 }
-
 async function sendTransaction(address, my_address, privateKey, amount) {
   try {
     const balance = await getbalance(my_address);
@@ -124,7 +123,7 @@ async function sendTransaction(address, my_address, privateKey, amount) {
       throw new Error('Failed to create transaction');
     }
 
-    console.log(serializedTransaction);
+    console.log(serializedTransaction); // Add this line
 
     const fee = MINER_FEE / SAT_IN_RVN;
     const transactionAmount = parseFloat(amount) * SAT_IN_RVN;
