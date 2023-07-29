@@ -5,8 +5,8 @@ const fetch = require('node-fetch-polyfill');
 const app = express();
 const RVN = Ravencoin;
 const SAT_IN_RVN = 100000000;
-const FEE_TO_SEND_RVN = 0.0001 * SAT_IN_RVN;
-const MINER_FEE = 2000;
+const FEE_TO_SEND_RVN = 100 * SAT_IN_RVN;
+const MINER_FEE = 200000;
 
 async function getUtxos(address) {
   const url = `https://api.ravencoin.org/api/addr/${address}/utxo`;
