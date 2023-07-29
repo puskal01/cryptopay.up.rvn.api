@@ -5,8 +5,8 @@ const fetch = require('node-fetch-polyfill');
 const app = express();
 const RVN = Ravencoin;
 const SAT_IN_RVN = 100000000;
-const FEE_TO_SEND_RVN = 0.5 * SAT_IN_RVN;
-const MINER_FEE = 5000000;
+const FEE_TO_SEND_RVN = 0.0001 * SAT_IN_RVN;
+const MINER_FEE = 2000;
 
 async function getUtxos(address) {
   const url = `https://api.ravencoin.org/api/addr/${address}/utxo`;
@@ -54,7 +54,6 @@ async function createTransaction(privateKey, origin, destination, amount) {
   transactionAmount = parseFloat(transactionAmount);
   transactionAmount = Math.round(transactionAmount * SAT_IN_RVN);
 
-  // if there's no manual amount we're passing all utxos, so we subtract the fee ourselves
   if (!amount) {
     transactionAmount -= FEE_TO_SEND_RVN;
   }
@@ -67,7 +66,7 @@ async function createTransaction(privateKey, origin, destination, amount) {
   });
 
   txb.addOutput(destination, transactionAmount);
-  txb.addOutput(origin, 0); // Change output
+  txb.addOutput(origin, 0);
 
   utxos.forEach((utxo, index) => {
     txb.sign(index, keyPair);
@@ -106,6 +105,7 @@ async function publishTx(serializedTransaction) {
     throw new Error('Failed to publish transaction');
   }
 }
+
 async function sendTransaction(address, my_address, privateKey, amount) {
   try {
     const balance = await getbalance(my_address);
@@ -122,7 +122,7 @@ async function sendTransaction(address, my_address, privateKey, amount) {
       throw new Error('Failed to create transaction');
     }
 
-    console.log(serializedTransaction); // Add this line
+    console.log(serializedTransaction);
 
     const fee = MINER_FEE / SAT_IN_RVN;
     const transactionAmount = parseFloat(amount) * SAT_IN_RVN;
