@@ -91,7 +91,16 @@ async function publishTx(serializedTransaction) {
       })
     };
     const response = await Fetch(url, options);
-    const data = await response.json();
+    const text = await response.text();
+
+    // Check if the response is valid JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (error) {
+      throw new Error('Failed to parse JSON response');
+    }
+
     return data;
   } catch (error) {
     console.error(error);
