@@ -89,7 +89,7 @@ async function publishTx(serializedTransaction) {
         rawtx: serializedTransaction
       })
     };
-    const response = await Fetch(url, options);
+    const response = await fetch(url, options);
     const text = await response.text();
 
     let data;
